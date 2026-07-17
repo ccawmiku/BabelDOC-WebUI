@@ -1,0 +1,14 @@
+services:
+  babeldoc-web:
+    image: ghcr.io/ccawmiku/babeldoc-webui:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - babeldoc-data:/data
+      - babeldoc-cache:/home/babeldoc/.cache/babeldoc
+
+volumes:
+  babeldoc-data:
+  babeldoc-cache:

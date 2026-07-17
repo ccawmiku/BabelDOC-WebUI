@@ -1,7 +1,7 @@
 [project]
 name = "BabelDOC"
 version = "0.6.4"
-description = "Yet Another Document Translator"
+description = "在 BabelDOC 官方源码上新增本地中文网页界面、Windows 启动器和 Docker 自动构建"
 license = "AGPL-3.0"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
