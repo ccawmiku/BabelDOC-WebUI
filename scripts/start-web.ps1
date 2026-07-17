@@ -169,6 +169,6 @@ $serverArguments = @("-m", "babeldoc.webui.app")
 if ($NoBrowser) {
     $serverArguments += "--no-browser"
 }
-Write-Output "[BabelDOC] Starting at http://127.0.0.1:8787"
+Write-Output "[BabelDOC] Local: http://127.0.0.1:8787 | LAN: http://<this-PC-IP>:8787"
 & $selectedVenvPython @serverArguments
 exit $LASTEXITCODE

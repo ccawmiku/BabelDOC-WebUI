@@ -793,3 +793,30 @@ def test_run_converts_async_cancellation_to_cancelled_job(tmp_path, monkeypatch)
     assert job.finished_at is not None
     assert job.options.api_key == ""
     manager.executor.shutdown(wait=False, cancel_futures=True)
+
+
+def test_cli_defaults_to_lan_and_opens_loopback_url(tmp_path, monkeypatch):
+    timer_calls = []
+    uvicorn_calls = []
+
+    class FakeTimer:
+        def __init__(self, interval, function, args):
+            timer_calls.append((interval, function, args))
+
+        def start(self):
+            timer_calls.append("started")
+
+    monkeypatch.setattr(webapp.argparse.ArgumentParser, "parse_args", lambda _self: SimpleNamespace(
+        host=webapp.DEFAULT_HOST,
+        port=8787,
+        data_dir=tmp_path,
+        no_browser=False,
+    ))
+    monkeypatch.setattr(webapp.threading, "Timer", FakeTimer)
+    monkeypatch.setattr(webapp.uvicorn, "run", lambda app, host, port: uvicorn_calls.append((app, host, port)))
+
+    webapp.cli()
+
+    assert timer_calls[0][2] == ("http://127.0.0.1:8787",)
+    assert timer_calls[1] == "started"
+    assert uvicorn_calls[0][1:] == (webapp.DEFAULT_HOST, 8787)

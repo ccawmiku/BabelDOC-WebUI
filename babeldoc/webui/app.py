@@ -43,6 +43,8 @@ logger = logging.getLogger(__name__)
 
 STATIC_DIR = Path(__file__).parent / "static"
 DEFAULT_DATA_DIR = Path.cwd() / ".babeldoc-web"
+DEFAULT_HOST = "0.0.0.0"  # noqa: S104 - LAN access is an explicit product default.
+IPV6_ANY_HOST = "::"  # noqa: S104 - Used only to select the loopback browser URL.
 MAX_UPLOAD_BYTES = 500 * 1024 * 1024
 MAX_GLOSSARY_ROWS = 20_000
 REASONING_EFFORTS = {"", "low", "medium", "high"}
@@ -847,9 +849,9 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
 def cli() -> None:
     parser = argparse.ArgumentParser(
-        description="Run the local BabelDOC web interface",
+        description="启动 BabelDOC 本地网页界面",
     )
-    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=8787)
     parser.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     parser.add_argument("--no-browser", action="store_true")
@@ -860,10 +862,15 @@ def cli() -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     if not args.no_browser:
+        browser_host = (
+            "127.0.0.1"
+            if args.host in {DEFAULT_HOST, IPV6_ANY_HOST}
+            else args.host
+        )
         threading.Timer(
             1.2,
             webbrowser.open,
-            args=(f"http://{args.host}:{args.port}",),
+            args=(f"http://{browser_host}:{args.port}",),
         ).start()
     uvicorn.run(create_app(args.data_dir), host=args.host, port=args.port)
 
