@@ -58,13 +58,25 @@ dependencies = [
 directml = ["onnxruntime-directml>=1.16.1"]
 cuda = ["onnxruntime-gpu>=1.16.1"]
 memray = ["memray>=1.17.1"]
+web = [
+    "fastapi>=0.115.0",
+    "python-multipart>=0.0.20",
+    "uvicorn[standard]>=0.34.0",
+]
+test = [
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+]
 
 [project.urls]
-Homepage = "https://github.com/funstory-ai/BabelDOC"
-Issues = "https://github.com/funstory-ai/BabelDOC/issues"
+Homepage = "https://github.com/ccawmiku/BabelDOC-WebUI"
+Repository = "https://github.com/ccawmiku/BabelDOC-WebUI"
+Issues = "https://github.com/ccawmiku/BabelDOC-WebUI/issues"
+Upstream = "https://github.com/funstory-ai/BabelDOC"
 
 [project.scripts]
 babeldoc = "babeldoc.main:cli"
+babeldoc-web = "babeldoc.webui.app:cli"
 
 [build-system]
 requires = ["hatchling"]
@@ -162,6 +174,7 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = [".", "src"]
 testpaths = ["tests"]
+addopts = "-ra"
 
 [bumpver]
 current_version = "0.6.4"

@@ -31,6 +31,80 @@
 
 PDF scientific paper translation and bilingual comparison library.
 
+> This public fork adds a local WebUI, Windows launcher, and container build to
+> the official [funstory-ai/BabelDOC](https://github.com/funstory-ai/BabelDOC)
+> source. Upstream remains the home of the core translation engine.
+
+## Local Web Interface
+
+This source checkout includes a local Chinese web interface for uploading PDFs,
+configuring an OpenAI-compatible translation service, monitoring progress,
+cancelling work, and downloading translated files.
+
+On Windows, double-click `start-web.bat`. The first run creates an isolated
+Python environment and installs the project with the web dependencies. The page
+then opens at `http://127.0.0.1:8787`.
+
+For a browser-first Windows launch, place `BabelDOC-Web.exe` in the repository
+root and double-click it. The launcher starts the local service in the
+background, waits for its health check, and opens the default browser. On first
+run it validates 64-bit Python 3.10-3.13, preferring Python 3.12, and
+automatically searches the Python launcher, `PATH`, official Python locations,
+Miniconda, and Anaconda. It reuses a compatible `.venv` or `.venv-web` and never
+overwrites an incompatible environment. To force the base interpreter used for
+environment creation, set `BABELDOC_PYTHON` to the full path of `python.exe`.
+You can verify selection without starting the server with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/start-web.ps1 -CheckOnly
+```
+
+Build the single-file launcher with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build-windows-exe.ps1
+```
+
+For a manual installation:
+
+```bash
+python -m venv .venv
+.venv/Scripts/python -m pip install ".[web]"
+.venv/Scripts/python -m babeldoc.webui.app
+```
+
+The server listens on localhost by default. Uploaded documents and generated
+files are stored under `.babeldoc-web/`. Web-interface settings are stored in
+`.babeldoc-web/settings.json`; on Windows, the API key is encrypted with DPAPI
+for the current Windows user and is never returned to the browser. The model
+selector can load available models from the configured OpenAI-compatible API.
+The progress and completion views report the provider's real token usage,
+including total, prompt, completion, cache-hit, and automatic term-extraction
+token counts. Auto-extracted glossaries are previewed directly in the result
+view with a term count and top-ten summary; the full searchable table opens in
+the page instead of downloading a CSV file. Progress uses one decimal place,
+explains every processing stage, and reports when the worker is still active
+while waiting for a model response. OpenAI-compatible reasoning effort can be
+set to off, low, medium, or high. Automatic glossary extraction is disabled by
+default because it makes an additional model pass over the document and can
+substantially increase token usage and processing time.
+
+### Docker
+
+The GitHub Actions workflow builds the `linux/amd64` image and publishes it to
+GitHub Container Registry. Run it with persistent settings, jobs, and model
+assets:
+
+```bash
+docker run --rm -p 8787:8787 \
+  -v babeldoc-data:/data \
+  -v babeldoc-cache:/home/babeldoc/.cache/babeldoc \
+  ghcr.io/ccawmiku/babeldoc-webui:latest
+```
+
+Open `http://127.0.0.1:8787`. The container does not embed an API key; configure
+the OpenAI-compatible endpoint in the web interface after startup.
+
 - **Online Service**: Beta version launched [Immersive Translate - BabelDOC](https://app.immersivetranslate.com/babel-doc/) Free usage quota is available; please refer to the FAQ section on the page for details.
 - **Self-deployment**: [PDFMathTranslate-next](https://github.com/PDFMathTranslate-next/PDFMathTranslate-next) support for BabelDOC, available for self-deployment + WebUI with more translation services.
 - Provides a simple [command line interface](#getting-started).

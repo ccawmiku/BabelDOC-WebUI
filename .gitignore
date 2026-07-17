@@ -19,12 +19,16 @@ memray*
 *.json
 **/*.pyc
 .venv
+.venv-web
 .idea
 *.egg-info
 .DS_Store
 .vscode
 __pycache__
+.babeldoc-web/
 .ruff_cache
+.coverage
+htmlcov/
 .tmp
 yadt.toml
 yadt.toml*
